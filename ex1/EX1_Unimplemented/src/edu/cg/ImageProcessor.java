@@ -92,15 +92,55 @@ public class ImageProcessor extends FunctioalForEachLoops {
 
 		return output;
 	}
-	
+
 	public BufferedImage greyscale() {
-		// TODO: Implement this method, remove the exception.
-		throw new UnimplementedMethodException("greyscale");
+		logger.log("Prepareing for greyscaling...");
+		// Setting up a new Image which will have the greyscale result
+		BufferedImage ans = newEmptyInputSizedImage();
+		// Iterating over each pixel
+		forEach((y, x) -> {
+			// Take the original color of hte pixel
+			Color c = new Color(workingImage.getRGB(x, y));
+			// Implementing provided greyscale formula
+			double nom = (c.getRed() * rgbWeights.redWeight) + (c.getGreen() * rgbWeights.greenWeight)
+					+ (c.getBlue() * rgbWeights.blueWeight);
+			double denom = rgbWeights.redWeight + rgbWeights.greenWeight + rgbWeights.blueWeight;
+			double g = (nom/denom);
+			// Converting to int
+			int gToInt = (int) g;
+			Color color = new Color(gToInt, gToInt, gToInt);
+			// Setting new color of the pixel
+			ans.setRGB(x, y, color.getRGB());
+		});
+
+		logger.log("Changing to greyscale done!");
+
+		return ans;
 	}
 
 	public BufferedImage nearestNeighbor() {
-		// TODO: Implement this method, remove the exception.
-		throw new UnimplementedMethodException("nearestNeighbor");
+		logger.log("Prepareing for Nearest Neighbor resize...");
+		// Obtaining the ratio of the image inrelation to the new image and the working image
+		double wRatio = (double)inWidth / outWidth;
+		double hRatio = (double)inHeight / outHeight;
+		// Setting up a new Image which will have resize result using NN
+		BufferedImage ans = newEmptyOutputSizedImage();
+		// Applying the parameters for the new image
+		setForEachOutputParameters();
+		// Iterating over all pixels in the image
+		forEach((y, x) -> {
+			// Finding the original (x,y) coordinate we want to take the color from
+			int xOrig = (int)Math.floor(x * wRatio);
+			int yOrig = (int)Math.floor(y * hRatio);
+			// Taking the color
+			Color c = new Color(workingImage.getRGB(xOrig, yOrig));
+			// Setting the color to the x,y of the new Image
+			ans.setRGB(x , y, c.getRGB());
+		});
+
+		logger.log("Nearest Neighbor resize done!");
+
+		return ans;
 	}
 
 }
