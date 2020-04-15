@@ -286,7 +286,7 @@ public class MenuWindow extends JFrame implements Logger {
 
 			currentMask = duplicateMask(sc.getMaskAfterSeamCarving());
 		}
-		present(result, "Image After Object Removal");
+		present(currentImg, "Image After Object Removal");
 	}
 
 	public void maskImage() {
