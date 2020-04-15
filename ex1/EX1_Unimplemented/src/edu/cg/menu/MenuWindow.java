@@ -243,11 +243,13 @@ public class MenuWindow extends JFrame implements Logger {
 	}
 
 	/**
-	 * The function we added that removes a provided object, specified by the mask, from the image
+	 * The function we added that removes a provided object, specified by the mask,
+	 * from the image
+	 * 
 	 * @param srcMask
 	 */
 	public void removeObjectFromImage(boolean[][] srcMask) {
-		// Duplicated the mask as we dont want to change the original one
+		// Duplicated the mask as we don't want to change the original one
 		boolean[][] currentMask = duplicateMask(srcMask);
 		// Getting image width
 		final int originalSize = this.workingImage.getWidth();
@@ -273,7 +275,6 @@ public class MenuWindow extends JFrame implements Logger {
 			if (maxNumTrueInRow == 0) {
 				break;
 			}
-			// ??
 			maxNumTrueInRow = Math.min(maxNumTrueInRow, originalSize / 3 - 1);
 
 			SeamsCarver sc = new SeamsCarver(this, currentImg, originalSize - maxNumTrueInRow, rgbWeights, currentMask);
