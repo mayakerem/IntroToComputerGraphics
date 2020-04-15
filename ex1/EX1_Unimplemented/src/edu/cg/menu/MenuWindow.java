@@ -39,7 +39,7 @@ public class MenuWindow extends JFrame implements Logger {
 	public MenuWindow() {
 		super();
 
-		setTitle("Ex1: Image Processing Application");
+		setTitle("Maya/Maia - Ex1: Image Processing Application");
 		// The following line makes sure that all application threads are terminated
 		// when this window is closed.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
