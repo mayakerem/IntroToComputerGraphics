@@ -67,7 +67,7 @@ public class SeamsCarver extends ImageProcessor {
             this.energyMatrix = new long[this.inHeight][this.inWidth];
             this.bestSeamsPaths = new int[this.inHeight][this.inWidth];
             this.seams = new int[this.numOfSeams][this.inHeight];
-            this.getGreyscale();
+            this.getGreyscaleImage();
             this.initXIndices();
             this.shiftedMask = this.duplicateWorkingMask();
             this.findSeams();
@@ -75,6 +75,134 @@ public class SeamsCarver extends ImageProcessor {
          this.logger.log("Preliminary calculations complete");
    }
 
+   /**
+    * Provided resize function
+    * @return
+    */
+   public BufferedImage resize() {
+      return this.resizeOp.resize();
+   }
+
+   /**
+    * Required Method.
+    * This method reduces the image width
+    * @return
+    */
+   private BufferedImage reduceImageWidth() {
+      this.logger.log("Reducing image width by " + this.numOfSeams);
+      // Setting up temporary image
+      int[][] tempImage = this.duplicatedColorWorkingImage();
+      // Iterating over all seams
+      for(int i = 0; i < this.seams.length; ++i) {
+         int[] seam = this.seams[i];
+         // Iterating over a particular seam length (height)
+         this.forEachHeight((y) -> {
+            int x = seam[y];
+            int colorRight, colorMixture, colorMiddle;
+            // Getting color
+            colorMiddle = tempImage[y][x];
+            if (x > 0) {
+               colorRight = tempImage[y][x - 1];
+               colorMixture = mixRGB(colorMiddle, colorRight);
+               tempImage[y][x - 1] = colorMixture;
+            }
+            if (x + 1 < this.inWidth) {
+               colorRight = tempImage[y][x + 1];
+               colorMixture = mixRGB(colorMiddle, colorRight);
+               tempImage[y][x + 1] = colorMixture;
+            }
+         });
+      }
+
+      BufferedImage resultImage = this.newEmptyOutputSizedImage();
+      // Update parameters
+      this.pushForEachParameters();
+      this.setForEachWidth(this.outWidth);
+      // Iterate over all pixels and give them a new color
+      this.forEach((y, x) -> {
+         int origX = this.xIndices[y][x];
+         int rgb = tempImage[y][origX];
+         
+         Color color = new Color(getRed(rgb), getGreen(rgb), getBlue(rgb));
+         // Set the new color for the resulting image
+         resultImage.setRGB(x, y, color.getRGB());
+      });
+      
+      this.popForEachParameters();
+      this.setMaskAfterWidthReduce();
+      return resultImage;
+   }
+   
+   /**
+    * Required Method
+    * This method increases the width of an image based using merge operation and rotating seams
+    * @return
+    */
+   private BufferedImage increaseImageWidth() {
+	   this.logger.log("Increases image width by + " + this.numOfSeams);
+	   this.maskAfterSeamCarving = new boolean[this.inHeight][this.outWidth];
+       
+       // Setting up a temporary image so we can get  the original seams
+       int[][] tempImage = this.duplicatedColorWorkingImage();
+       int[][] rotatedSeams = this.rotatedSeams();
+       // Iterating over seam column (which represents a row now)
+       this.forEachHeight((y) -> {
+    	   // Merging image and seam per column
+    	   tempImage[y] = this.columnMerge(tempImage[y], rotatedSeams[y], y);
+	   });
+       // Setting up resulting image
+       BufferedImage resultImage = this.newEmptyOutputSizedImage();
+	   this.pushForEachParameters();
+	   this.setForEachWidth(this.outWidth);
+	   // Iterating over all pixels
+	   this.forEach((y, x) -> {
+		   // Obtaining original image color
+		   int rgb = tempImage[y][x];
+		   Color c = new Color(getRed(rgb), getGreen(rgb), getBlue(rgb));
+		   // setting up original colors for resulting image
+		   resultImage.setRGB(x, y, c.getRGB());
+       });
+	   this.popForEachParameters();
+	   return resultImage;
+   }
+   
+   /**
+    * Optional function.
+    * This method shows the seams, vertical or horizontal on the GUI module
+    * @param seamColorRGB
+    * @return
+    */
+   public BufferedImage showSeams(int seamColorRGB) {
+	   BufferedImage result = this.duplicateWorkingImage();
+	   if (this.numOfSeams > 0) {
+		   // Iterating over all seams
+		   for(int i = 0; i < this.seams.length; ++i) {
+			   int[] seam = this.seams[i];
+			   // Iterating over the height of a single seam
+			   this.forEachHeight((y) -> {
+				   int x = seam[y];
+				   // Set seam color so it is visible on the GUI
+				   result.setRGB(x, y, seamColorRGB);
+			   });
+		   }	
+	   }
+	   return result;
+   }
+
+   /**
+    * Required Method. 
+    * This method retries a new mask after seam carving operation OR duplicates the working mask
+    * if seam carving was not applied
+    * @return
+    */
+    public boolean[][] getMaskAfterSeamCarving() {
+ 	   if (this.maskAfterSeamCarving != null) {
+ 		   return this.maskAfterSeamCarving;
+ 	   } else {
+            return this.duplicateWorkingMask();
+        }
+    }
+    
    /**
     * Additional necessary function.
     * Duplicates the working mask by iterating over entire mask
@@ -123,7 +251,7 @@ public class SeamsCarver extends ImageProcessor {
       // Iterating over all pixels in the image
       this.forEach((y, x) -> {
         // Calculating the optimal path by the cost value
-        BestPath bestPath = this.getMinimalCost(y, x);
+        BestPath bestPath = this.getBestPath(y, x);
         this.bestSeamsPaths[y][x] = bestPath.pathMin;
         this.energyMatrix[y][x] = this.getPixelEnergy(y, x) + bestPath.pixelMin;
       });
@@ -133,10 +261,11 @@ public class SeamsCarver extends ImageProcessor {
     }
     
     /**
-     * Additional necessary function. Getting minimum cost of seam/path based on top left,
+     * Additional necessary function. 
+     * Getting minimum cost of seam/path based on top left,
      * top right and top pixels in dynamic programming manner 
      */
-    private BestPath getMinimalCost(int y, int x) {
+    private BestPath getBestPath(int y, int x) {
     	long currentPixelMin = BLACK;
 	    int pathMin = x;
 	    long costLeft, costUp, costRight, minLeft, minRight, minUp;
@@ -190,7 +319,7 @@ public class SeamsCarver extends ImageProcessor {
     * This method removes seams and stores them
     */
    private void removeSeam() {
-	   this.logger.log("Initializing seam removal");
+	   this.logger.log("Initializing seam removal process");
        int pathMin = 0;
        int y;
         
@@ -216,7 +345,7 @@ public class SeamsCarver extends ImageProcessor {
            this.logger.log("Storing path for pixel: " + pathMin);
            pathMin = this.bestSeamsPaths[y][pathMin];
        }
-       this.logger.log("Seam removed");
+       this.logger.log("Seams removed successfully");
    }
    
    /**
@@ -276,7 +405,7 @@ public class SeamsCarver extends ImageProcessor {
     * Additional necessary function.
     * Get greyscale image by iterating over every pixel
     */
-   private void getGreyscale() {
+   private void getGreyscaleImage() {
 	   BufferedImage grey = this.greyscale();
        this.greyscaledImage = new int[this.inHeight][this.inWidth];
        // Iterating over all pixels
@@ -286,94 +415,13 @@ public class SeamsCarver extends ImageProcessor {
     	   this.greyscaledImage[y][x] = (new Color(grey.getRGB(x, y))).getBlue();
        });
    }
-   
-   /**
-    * Provided resize function
-    * @return
-    */
-   public BufferedImage resize() {
-      return this.resizeOp.resize();
-   }
-   
-   /**
-    * Optional function.
-    * This method shows the seams, vertical or horizontal on the GUI module
-    * @param seamColorRGB
-    * @return
-    */
-   public BufferedImage showSeams(int seamColorRGB) {
-	   BufferedImage result = this.duplicateWorkingImage();
-	   if (this.numOfSeams > 0) {
-		   // Iterating over all seams
-		   for(int i = 0; i < this.seams.length; ++i) {
-			   int[] seam = this.seams[i];
-			   // Iterating over the height of a single seam
-			   this.forEachHeight((y) -> {
-				   int x = seam[y];
-				   // Set seam color so it is visible on the GUI
-				   result.setRGB(x, y, seamColorRGB);
-			   });
-		   }	
-	   }
-	   return result;
-   }
-
-   /**
-    * Required Method.
-    * This method reduces the image width
-    * @return
-    */
-   private BufferedImage reduceImageWidth() {
-      this.logger.log("Reducing image width by " + this.numOfSeams);
-      // Setting up temporary image
-      int[][] tempImage = this.duplicateWorkingImageColorful();
-      // Iterating over all seams
-      for(int i = 0; i < this.seams.length; ++i) {
-         int[] seam = this.seams[i];
-         // Iterating over a particular seam length (height)
-         this.forEachHeight((y) -> {
-            int x = seam[y];
-            int colorRight, colorMixture, colorMiddle;
-            // Getting color
-            colorMiddle = tempImage[y][x];
-            if (x > 0) {
-               colorRight = tempImage[y][x - 1];
-               colorMixture = mixRGB(colorMiddle, colorRight);
-               tempImage[y][x - 1] = colorMixture;
-            }
-            if (x + 1 < this.inWidth) {
-               colorRight = tempImage[y][x + 1];
-               colorMixture = mixRGB(colorMiddle, colorRight);
-               tempImage[y][x + 1] = colorMixture;
-            }
-         });
-      }
-
-      BufferedImage resultImage = this.newEmptyOutputSizedImage();
-      // Update parameters
-      this.pushForEachParameters();
-      this.setForEachWidth(this.outWidth);
-      // Iterate over all pixels and give them a new color
-      this.forEach((y, x) -> {
-         int origX = this.xIndices[y][x];
-         int rgb = tempImage[y][origX];
-         
-         Color color = new Color(getRed(rgb), getGreen(rgb), getBlue(rgb));
-         // Set the new color for the resulting image
-         resultImage.setRGB(x, y, color.getRGB());
-      });
-      
-      this.popForEachParameters();
-      this.setMaskAfterWidthReduce();
-      return resultImage;
-   }
-
+  
    /**
     * Additional necessary function.
     * Duplicating an image with the right color per pixel
     * @return
     */
-   private int[][] duplicateWorkingImageColorful() {
+   private int[][] duplicatedColorWorkingImage() {
 	   this.logger.log("Initiating working image duplication");
 	   int[][] duplicatedImage = new int[this.inHeight][this.inWidth];
 	   // Iterating over each pixel
@@ -383,63 +431,7 @@ public class SeamsCarver extends ImageProcessor {
 	   });
 	   return duplicatedImage;
    }
-
-   private static int getRGB(int r, int g, int b) {
-      return r << 16 | g << 8 | b;
-   }
-
-   private static int mixRGB(int rgb1, int rgb2) {
-      int red = (getRed(rgb1) + getRed(rgb2)) / 2;
-      int green = (getGreen(rgb1) + getGreen(rgb2)) / 2;
-      int blue = (getBlue(rgb1) + getBlue(rgb2)) / 2;
-      return getRGB(red, green, blue);
-   }
-
-   private static int getRed(int rgb) {
-      return rgb >> 16;
-   }
-
-   private static int getGreen(int rgb) {
-      return rgb >> 8 & 255;
-   }
-
-   private static int getBlue(int rgb) {
-      return rgb & 255;
-   }
-
-   /**
-    * Required Method
-    * This method increases the width of an image based using merge operation and rotating seams
-    * @return
-    */
-   private BufferedImage increaseImageWidth() {
-	   this.logger.log("Increases image width by + " + this.numOfSeams);
-	   this.maskAfterSeamCarving = new boolean[this.inHeight][this.outWidth];
-       
-       // Setting up a temporary image so we can get  the original seams
-       int[][] tempImage = this.duplicateWorkingImageColorful();
-       int[][] rotatedSeams = this.rotateSeams();
-       // Iterating over seam column (which represents a row now)
-       this.forEachHeight((y) -> {
-    	   // Merging image and seam per column
-    	   tempImage[y] = this.columnMerge(tempImage[y], rotatedSeams[y], y);
-	   });
-       // Setting up resulting image
-       BufferedImage resultImage = this.newEmptyOutputSizedImage();
-	   this.pushForEachParameters();
-	   this.setForEachWidth(this.outWidth);
-	   // Iterating over all pixels
-	   this.forEach((y, x) -> {
-		   // Obtaining original image color
-		   int rgb = tempImage[y][x];
-		   Color c = new Color(getRed(rgb), getGreen(rgb), getBlue(rgb));
-		   // setting up original colors for resulting image
-		   resultImage.setRGB(x, y, c.getRGB());
-       });
-	   this.popForEachParameters();
-	   return resultImage;
-   }
-   
+ 
    /**
     * Additional necessary function.
     * This method returns a line/column of an image merged with a seam
@@ -453,7 +445,7 @@ public class SeamsCarver extends ImageProcessor {
       int imageIndex, seamIndex, x1, x2;
       imageIndex = seamIndex = x1 = x2 = 0;
       
-      for(imageIndex = 0; x1 < imageColumns.length & seamIndex < seamColumn.length; mergedColumn[imageIndex++] = x1 <= x2 ? imageColumns[x1++] : this.seamsRGB(imageColumns, row, seamColumn, seamIndex++)) {
+      for(imageIndex = 0; x1 < imageColumns.length & seamIndex < seamColumn.length; mergedColumn[imageIndex++] = x1 <= x2 ? imageColumns[x1++] : this.seamColor(imageColumns, row, seamColumn, seamIndex++)) {
          x2 = seamColumn[seamIndex];
          if(x1 <= x2) {
         	 this.maskAfterSeamCarving[row][imageIndex] = this.imageMask[row][x1];
@@ -469,7 +461,7 @@ public class SeamsCarver extends ImageProcessor {
          // Creating a mask based on bitwise boolean operations
          boolean mask = this.imageMask[row][x2] || x2 + 1 < this.inWidth && this.imageMask[row][x2 + 1];
          this.maskAfterSeamCarving[row][imageIndex] = mask;
-         mergedColumn[imageIndex++] = this.seamsRGB(imageColumns, row, seamColumn, seamIndex++);
+         mergedColumn[imageIndex++] = this.seamColor(imageColumns, row, seamColumn, seamIndex++);
       }
 
       while(x1 < imageColumns.length) {
@@ -488,7 +480,7 @@ public class SeamsCarver extends ImageProcessor {
     * @param x
     * @return
     */
-   private int seamsRGB(int[] imageSeam, int y, int[] seam, int x) {
+   private int seamColor(int[] imageSeam, int y, int[] seam, int x) {
 	   int rgb = 0;
 	   if (seam[x] + 1 < this.inWidth) {
          Color color = new Color(this.workingImage.getRGB(seam[x] + 1, y));
@@ -502,7 +494,7 @@ public class SeamsCarver extends ImageProcessor {
     * This method is needed for increasing the image width, we must rotate the seams
     * @return
     */
-   private int[][] rotateSeams() {
+   private int[][] rotatedSeams() {
 	   // Initializing array for rotate seams
        int[][] rotatedSeams = new int[this.inHeight][this.numOfSeams];
        this.pushForEachParameters();
@@ -533,17 +525,28 @@ public class SeamsCarver extends ImageProcessor {
        this.popForEachParameters();
    }
    
-   /**
-   * Required Method. 
-   * This method retries a new mask after seam carving operation OR duplicates the working mask
-   * if seam carving was not applied
-   * @return
-   */
-   public boolean[][] getMaskAfterSeamCarving() {
-	   if (this.maskAfterSeamCarving != null) {
-		   return this.maskAfterSeamCarving;
-	   } else {
-           return this.duplicateWorkingMask();
-       }
+
+   private static int getRGB(int r, int g, int b) {
+      return r << 16 | g << 8 | b;
    }
+
+   private static int mixRGB(int rgb1, int rgb2) {
+      int red = (getRed(rgb1) + getRed(rgb2)) / 2;
+      int green = (getGreen(rgb1) + getGreen(rgb2)) / 2;
+      int blue = (getBlue(rgb1) + getBlue(rgb2)) / 2;
+      return getRGB(red, green, blue);
+   }
+
+   private static int getRed(int rgb) {
+      return rgb >> 16;
+   }
+
+   private static int getGreen(int rgb) {
+      return rgb >> 8 & 255;
+   }
+
+   private static int getBlue(int rgb) {
+      return rgb & 255;
+   }
+   
 }
