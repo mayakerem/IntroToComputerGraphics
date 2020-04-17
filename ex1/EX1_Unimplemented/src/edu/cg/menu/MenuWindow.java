@@ -311,16 +311,16 @@ public class MenuWindow extends JFrame implements Logger {
 	public void maskImage() {
 		new MaskPainterWindow(duplicateImage(), "Mask Painter", this).setVisible(true);
 	}
+	
 	public static void printMask(int mat[][]) { 
-        for (int[] row : mat) 
-            // converting each row as string 
-            // and then printing in a separate line 
+        for (int[] row : mat) {
             System.out.println(Arrays.toString(row)); 
-    } 
+        } 
+	}
 	public static void printMask(boolean mat[][]) { 
-        for (boolean[] row : mat) 
-            // converting each row as string 
-            // and then printing in a separate line 
-            System.out.println(Arrays.toString(row)); 
-    } 
+        for (boolean[] row : mat) {
+        	System.out.println(Arrays.toString(row)); 
+        }
+	} 
+	
 }
