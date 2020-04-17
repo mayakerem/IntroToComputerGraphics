@@ -292,31 +292,39 @@ public class MenuWindow extends JFrame implements Logger {
 
 	
 	public void removeObjectFromImage(boolean[][] srcMask) {
+		//First we are duplicating the working image
 		BufferedImage result = duplicateImage(workingImage);
+		// Then we are getting the mask
 		boolean[][] tempMask = duplicateMask(srcMask);
-
+		
+		
 		int width = workingImage.getWidth();
 		RGBWeights rgbWeights = colorMixer.getRGBWeights();
 
 		// Find the maximum number of true values in a row
 		// in the mask.
 		int maxCount = getMaxTrueValuesInMask(tempMask);
-
+		System.out.println("Initial Max Count " + maxCount);
+		int i = 0;
 		while (maxCount > 0) {
 			// Bound the number of seams to reduce in each use of
 			// the seam carver
 			int numOfSeamsToReduce = Math.min(maxCount, (width / 3) - 1);
 			int outWidth = width - numOfSeamsToReduce;
-
 			SeamsCarver sc = new SeamsCarver(this, result, outWidth,
 					rgbWeights, tempMask);
 
 			// Reduce the image and get the updated mask.
 			result = sc.resize();
+			i ++;
+			if (i%1000==0) {
+				present(result, "After seam iteration " + i);
+			}
 			tempMask = sc.getMaskAfterSeamCarving();
+				//printMask(tempMask);
 			maxCount = getMaxTrueValuesInMask(tempMask);
 		}
-
+		//System.out.println("finished while loop");
 		// Increase the image back to it's original size.
 		SeamsCarver sc = new SeamsCarver(this, result, width, rgbWeights, duplicateMask());
 		result = sc.resize();
@@ -329,20 +337,33 @@ public class MenuWindow extends JFrame implements Logger {
 	 * @return - the maximum number.
 	 */
 	private int getMaxTrueValuesInMask(boolean[][] mask) {
+		//System.out.println("getting max true values---------------");
 		int maxCount = 0;
 		for (boolean[] row : mask) {
 			int currentRowCounter = 0;
 			for (boolean col : row) {
-				if (col) currentRowCounter++;
+				if (col) 
+					currentRowCounter++;
 			}
-
 			if (currentRowCounter > maxCount) maxCount = currentRowCounter;
 		}
-
+		//System.out.println("finished going over entire mask - " + maxCount);
 		return maxCount;
 	}
 	
 	public void maskImage() {
 		new MaskPainterWindow(duplicateImage(), "Mask Painter", this).setVisible(true);
 	}
+	public static void printMask(int mat[][]) { 
+        for (int[] row : mat) 
+            // converting each row as string 
+            // and then printing in a separate line 
+            System.out.println(Arrays.toString(row)); 
+    } 
+	public static void printMask(boolean mat[][]) { 
+        for (boolean[] row : mat) 
+            // converting each row as string 
+            // and then printing in a separate line 
+            System.out.println(Arrays.toString(row)); 
+    } 
 }
