@@ -247,50 +247,7 @@ public class MenuWindow extends JFrame implements Logger {
 	 * from the image
 	 * 
 	 * @param srcMask
-	 */
-//	public void removeObjectFromImage(boolean[][] srcMask) {
-//		// Duplicated the mask as we don't want to change the original one
-//		boolean[][] currentMask = duplicateMask(srcMask);
-//		// Getting image width
-//		final int originalSize = this.workingImage.getWidth();
-//		// Get colors in RGB from the color mixer
-//		final RGBWeights rgbWeights = this.colorMixer.getRGBWeights();
-//		// Working on a duplicated image and not the original
-//		BufferedImage currentImg = this.duplicateImage();
-//
-//		while (true) {
-//			// Iterating over entire mask to find a the maximum row with Ts
-//			int maxNumTrueInRow = 0;
-//			for (int i = 0; i < currentMask.length; ++i) {
-//				int currentRowNum = 0;
-//				for (int j = 0; j < currentMask[i].length; ++j) {
-//					// if this entry is True in the mask
-//					if (currentMask[i][j]) {
-//						++currentRowNum;
-//					}
-//				}
-//				maxNumTrueInRow = Math.max(maxNumTrueInRow, currentRowNum);
-//			}
-//			// if mask was all false == empty mask
-//			if (maxNumTrueInRow == 0) {
-//				break;
-//			}
-//			maxNumTrueInRow = Math.min(maxNumTrueInRow, originalSize / 3 - 1);
-//
-//			SeamsCarver sc = new SeamsCarver(this, currentImg, originalSize - maxNumTrueInRow, rgbWeights, currentMask);
-//			currentImg = sc.resize();
-//
-//			// Get new mask
-//			currentMask = duplicateMask(sc.getMaskAfterSeamCarving());
-//			sc = new SeamsCarver(this, currentImg, originalSize, rgbWeights, currentMask);
-//			currentImg = sc.resize();
-//
-//			currentMask = duplicateMask(sc.getMaskAfterSeamCarving());
-//		}
-//		present(currentImg, "Image After Object Removal");
-//	}
-
-	
+	 */	
 	public void removeObjectFromImage(boolean[][] srcMask) {
 		//First we are duplicating the working image
 		BufferedImage result = duplicateImage(workingImage);
