@@ -14,7 +14,6 @@ import edu.cg.RGBWeights;
 import edu.cg.ImageProcessor;
 import edu.cg.Logger;
 import edu.cg.SeamsCarver;
-import edu.cg.UnimplementedMethodException;
 import edu.cg.menu.components.ActionsController;
 import edu.cg.menu.components.ColorMixer;
 import edu.cg.menu.components.ImagePicker;
@@ -251,61 +250,53 @@ public class MenuWindow extends JFrame implements Logger {
 	public void removeObjectFromImage(boolean[][] srcMask) {
 		//First we are duplicating the working image
 		BufferedImage result = duplicateImage(workingImage);
-		// Then we are getting the mask
-		boolean[][] tempMask = duplicateMask(srcMask);
-		
+		// Then we are getting the mask to not ruin original image
+		boolean[][] temporaryMask = duplicateMask(srcMask);
 		
 		int width = workingImage.getWidth();
 		RGBWeights rgbWeights = colorMixer.getRGBWeights();
 
-		// Find the maximum number of true values in a row
-		// in the mask.
-		int maxCount = getMaxTrueValuesInMask(tempMask);
-		System.out.println("Initial Max Count " + maxCount);
+		int maxCountTrue = getMaxTrueValues(temporaryMask);
 		int i = 0;
-		while (maxCount > 0) {
-			// Bound the number of seams to reduce in each use of
-			// the seam carver
-			int numOfSeamsToReduce = Math.min(maxCount, (width / 3) - 1);
+		while (maxCountTrue > 0) {
+			int numOfSeamsToReduce = Math.min(maxCountTrue, (width / 3) - 1);
 			int outWidth = width - numOfSeamsToReduce;
-			SeamsCarver sc = new SeamsCarver(this, result, outWidth,
-					rgbWeights, tempMask);
+			SeamsCarver sc = new SeamsCarver(this, result, outWidth, rgbWeights, temporaryMask);
 
-			// Reduce the image and get the updated mask.
+			// Reduce the image and get the updated mask after removal of seams
 			result = sc.resize();
-			i ++;
-			if (i%1000==0) {
-				present(result, "After seam iteration " + i);
-			}
-			tempMask = sc.getMaskAfterSeamCarving();
-				//printMask(tempMask);
-			maxCount = getMaxTrueValuesInMask(tempMask);
+//			i ++;
+//			
+//			if (i%1000==0) {
+//				present(result, "After seam iteration " + i);
+//			}
+			temporaryMask = sc.getMaskAfterSeamCarving();
+			maxCountTrue = getMaxTrueValues(temporaryMask);
 		}
-		//System.out.println("finished while loop");
-		// Increase the image back to it's original size.
+		// Increase the image back to it's original size after removing seams that go through mask
 		SeamsCarver sc = new SeamsCarver(this, result, width, rgbWeights, duplicateMask());
 		result = sc.resize();
 		present(result, "Image After Object Removal");
 	}
 	
-	/**
-	 * Find the maximum number of true values per row in a given mask.
-	 * @param mask - matrix of booleans.
-	 * @return - the maximum number.
-	 */
-	private int getMaxTrueValuesInMask(boolean[][] mask) {
-		//System.out.println("getting max true values---------------");
-		int maxCount = 0;
-		for (boolean[] row : mask) {
+	
+	
+	
+	private int getMaxTrueValues(boolean[][] mask) {
+		int maxCountTrue = 0;
+			// Finds the maximum number of true values per row in a given mask.
+			for (boolean[] row : mask) {
 			int currentRowCounter = 0;
+			//go through every position in row
 			for (boolean col : row) {
+				//if true, then add 1 to counter
 				if (col) 
 					currentRowCounter++;
 			}
-			if (currentRowCounter > maxCount) maxCount = currentRowCounter;
-		}
-		//System.out.println("finished going over entire mask - " + maxCount);
-		return maxCount;
+			if (currentRowCounter > maxCountTrue) maxCountTrue = currentRowCounter;
+			}
+		//we return number of true values of row with most true values
+		return maxCountTrue;
 	}
 	
 	public void maskImage() {
