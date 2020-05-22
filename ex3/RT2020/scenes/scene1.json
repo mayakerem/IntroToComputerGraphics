@@ -1,0 +1,103 @@
+{
+  "name": "scene1",
+  "maxRecursionLevel": 3,
+  "antiAliasingFactor": 1,
+  "renderRefarctions": true,
+  "renderReflections": true,
+  "camera": {
+    "cameraPosition": {
+      "x": 4.0,
+      "y": 4.0,
+      "z": 1.5
+    },
+    "centerPoint": {
+      "x": 1.9248566084017762,
+      "y": 1.9248566084017762,
+      "z": 0.877456982520533
+    },
+    "towardsVec": {
+      "x": -0.6917144638660746,
+      "y": -0.6917144638660746,
+      "z": -0.20751433915982237
+    },
+    "upVec": {
+      "x": -0.14673479641335554,
+      "y": -0.14673479641335554,
+      "z": 0.978231976089037
+    },
+    "rightVec": {
+      "x": -0.7071067811865475,
+      "y": 0.7071067811865475,
+      "z": 0.0
+    },
+    "viewAngle": 2.0,
+    "distanceToPlain": 3.0,
+    "resX": 200.0,
+    "resY": 200.0,
+    "pixelRatio": 0.0
+  },
+  "ambient": {
+    "x": 1.0,
+    "y": 1.0,
+    "z": 1.0
+  },
+  "backgroundColor": {
+    "x": 0.0,
+    "y": 0.5,
+    "z": 1.0
+  },
+  "lightSources": [
+    {
+      "CLASSNAME": "edu.cg.scene.lightSources.DirectionalLight",
+      "DATA": {
+        "direction": {
+          "x": -0.5773502691896258,
+          "y": -0.5773502691896258,
+          "z": -0.5773502691896258
+        },
+        "intensity": {
+          "x": 0.9,
+          "y": 0.9,
+          "z": 0.9
+        }
+      }
+    }
+  ],
+  "surfaces": [
+    {
+      "shape": {
+        "CLASSNAME": "edu.cg.scene.objects.Sphere",
+        "DATA": {
+          "center": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "radius": 1.0
+        }
+      },
+      "material": {
+        "Ka": {
+          "x": 0.8,
+          "y": 0.05,
+          "z": 0.05
+        },
+        "Kd": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Ks": {
+          "x": 0.9,
+          "y": 0.9,
+          "z": 0.9
+        },
+        "reflectionIntensity": 0.3,
+        "shininess": 10,
+        "isTransparent": false,
+        "refractionIntensity": 0.0,
+        "refractionIndex": 1.5
+      }
+    }
+  ]
+}
