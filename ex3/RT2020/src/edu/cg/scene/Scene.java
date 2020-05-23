@@ -28,7 +28,7 @@ public class Scene {
 	private boolean renderReflections = false;
 
 	private PinholeCamera camera;
-	private Vec ambient = new Vec(1, 1, 1); // white
+	private Vec ambient = new Vec(1, 1, 1); //white
 	private Vec backgroundColor = new Vec(0, 0.5, 1); // blue sky
 	private List<Light> lightSources = new LinkedList<>();
 	private List<Surface> surfaces = new LinkedList<>();
@@ -108,9 +108,13 @@ public class Scene {
 	@Override
 	public String toString() {
 		String endl = System.lineSeparator();
-		return "Camera: " + camera + endl + "Ambient: " + ambient + endl + "Background Color: " + backgroundColor + endl
-				+ "Max recursion level: " + maxRecursionLevel + endl + "Anti aliasing factor: " + antiAliasingFactor
-				+ endl + "Light sources:" + endl + lightSources + endl + "Surfaces:" + endl + surfaces;
+		return "Camera: " + camera + endl + 
+				"Ambient: " + ambient + endl + 
+				"Background Color: " + backgroundColor + endl + 
+				"Max recursion level: " + maxRecursionLevel + endl + 
+				"Anti aliasing factor: " + antiAliasingFactor+ endl + 
+				"Light sources:" + endl + lightSources + endl + 
+				"Surfaces:" + endl + surfaces;
 	}
 
 	private transient ExecutorService executor = null;
@@ -118,7 +122,6 @@ public class Scene {
 
 	private void initSomeFields(int imgWidth, int imgHeight, Logger logger) {
 		this.logger = logger;
-		// TODO: initialize your additional field here.
 	}
 
 	public BufferedImage render(int imgWidth, int imgHeight, double viewAngle, Logger logger)
@@ -164,99 +167,101 @@ public class Scene {
 
 	private Future<Color> calcColor(int x, int y) {
 		return executor.submit(() -> {
-			// TODO: You need to re-implement this method if you want to handle
-			// super-sampling. You're also free to change the given implementation if you
-			// want.
-		
-			
-
 			Point centerPoint = camera.transform(x, y);
 			Ray ray = new Ray(camera.getCameraPosition(), centerPoint);
 			Vec color = calcColor(ray, 0);
 			return color.toColor();
 		});
 	}
-
+	// This method calculates the color per ray and will be called recursively
 	private Vec calcColor(Ray ray, int recusionLevel) {
-		// TODO: Implement this method.
-		// This is the recursive method in RayTracing.
-		
 		// If the number of recursive ray is larger than the max possible
 		if (recusionLevel >= this.maxRecursionLevel) {
 			// return vector
 			return new Vec();
 		}
+		
 		// Initializing intersection ray
-		final Hit minHit = this.intersection(ray);
-		// If didnt hit the object then no intersection occured.
-		// Returning background color like assignment tells us to
-	    if (minHit == null) {
-	        return this.backgroundColor;
+		final Hit minimalIntersection = this.intersection(ray);
+		// If didn't hit the object then no intersection occurred.
+	    if (minimalIntersection == null) {
+			// Returning background color like assignment tells us to
+	    	return this.backgroundColor;
 	    }
+	    
 	    // Defining point and surface
-	    final Point hittingPoint = ray.getHittingPoint(minHit);
-	    final Surface surface = minHit.getSurface();
+	    final Point intersectionPoint = ray.getHittingPoint(minimalIntersection);
+	    final Surface intersectionSurface = minimalIntersection.getSurface();
+	    
 	    // Get surface color
-	    Vec color = surface.Ka().mult(this.ambient);
+	    Vec finalColor = intersectionSurface.Ka().mult(this.ambient);
 	    // Iterate over all light sources
-	    for (final Light light : this.lightSources) {
-	    	final Ray rayToLight = light.rayToLight(hittingPoint);
+	    for (final Light lightSource : this.lightSources) {
+	   
+	    	final Ray rayToLight = lightSource.rayToLight(intersectionPoint);
 	    	
-	        if (!this.isOccluded(light, rayToLight)) {
-	        	Vec tmpColor = this.diffuse(minHit, rayToLight);
-	            tmpColor = tmpColor.add(this.specular(minHit, rayToLight, ray));
-	            final Vec Il = light.intensity(hittingPoint, rayToLight);
-	            color = color.add(tmpColor.mult(Il));
+	        if (!this.isOccluded(lightSource, rayToLight)) {
+	        	Vec colorTemp = this.diffuse(minimalIntersection, rayToLight);
+	        	
+	            colorTemp = colorTemp.add(this.mirrorReflection(minimalIntersection, rayToLight, ray));
+	            
+	            final Vec intensityColor = lightSource.intensity(intersectionPoint, rayToLight);
+	            // Adjusting final color
+	            finalColor = finalColor.add(colorTemp.mult(intensityColor));
 	        }
 	    }
 	    
 	    // After iterating over all light sources, we now consider reflections
 	    if (this.renderReflections) {
-	       final Vec reflectionDirection = Ops.reflect(ray.direction(), minHit.getNormalToSurface());
-	       final Vec reflectionWeight = new Vec(surface.reflectionIntensity());
-	       final Vec reflectionColor = this.calcColor(new Ray(hittingPoint, reflectionDirection), recusionLevel + 1).mult(reflectionWeight);
-	       color = color.add(reflectionColor);
+	       final Vec reflectionDirection = Ops.reflect(ray.direction(), minimalIntersection.getNormalToSurface());
+	       final Vec reflectionWeight = new Vec(intersectionSurface.reflectionIntensity());
+	       final Vec reflectionColor = this.calcColor(new Ray(intersectionPoint, reflectionDirection), recusionLevel + 1).mult(reflectionWeight);
+           // Adjusting final color
+	       finalColor = finalColor.add(reflectionColor);
 	    }
+	    // Now we consider refractions
 	    if (this.renderRefarctions) {
 	    	Vec refractionColor = new Vec();
-	        if (surface.isTransparent()) {
-	        	final double n1 = surface.n1(minHit);
-	        	final double n2 = surface.n2(minHit);
-	            final Vec refractionDirection = Ops.refract(ray.direction(), minHit.getNormalToSurface(), n1, n2);
-	            final Vec refractionWeight = new Vec(surface.refractionIntensity());
-	            refractionColor = this.calcColor(new Ray(hittingPoint, refractionDirection), recusionLevel + 1).mult(refractionWeight);
-	                color = color.add(refractionColor);
+	        if (intersectionSurface.isTransparent()) {
+	        	final double n1 = intersectionSurface.n1(minimalIntersection);
+	        	final double n2 = intersectionSurface.n2(minimalIntersection);
+	            final Vec refractionDirection = Ops.refract(ray.direction(), minimalIntersection.getNormalToSurface(), n1, n2);
+	            final Vec refractionWeight = new Vec(intersectionSurface.refractionIntensity());
+	            refractionColor = this.calcColor(new Ray(intersectionPoint, refractionDirection), recusionLevel + 1).mult(refractionWeight);
+	            // Adjusting final color
+	            finalColor = finalColor.add(refractionColor);
 	            }
 	        }
-	        return color;
-		
-		
+	    
+	    return finalColor;
 	}
 
 
-	private Vec specular(Hit minHit, Ray rayToLight, Ray ray) {
-		final Vec L = rayToLight.direction();
-        final Vec N = minHit.getNormalToSurface();
-        final Vec R = Ops.reflect(L.neg(), N);
+	private Vec mirrorReflection(Hit minHit, Ray rayToLight, Ray ray) {
+		final Vec direction = rayToLight.direction();
+        final Vec normalVector = minHit.getNormalToSurface();
+        final Vec reflection = Ops.reflect(direction.neg(), normalVector);
         final Vec Ks = minHit.getSurface().Ks();
-        final Vec v = ray.direction();
+        final Vec directionVector = ray.direction();
         final int shininess = minHit.getSurface().shininess();
-        final double dot = R.dot(v.neg());
-        return (dot < 0.0) ? new Vec() : Ks.mult(Math.pow(dot, shininess));
+        final double dotProduct = reflection.dot(directionVector.neg());
+        if (dotProduct < 0.0) {
+        	return new Vec();
+        } else {
+        	return Ks.mult(Math.pow(dotProduct, shininess));
+        }
     }
 
-	// The following are Newly added functions
-	
 
 	private Vec diffuse(Hit minHit, Ray rayToLight) {
-		final Vec L = rayToLight.direction();
-        final Vec N = minHit.getNormalToSurface();
+		final Vec direction = rayToLight.direction();
+        final Vec normalVector = minHit.getNormalToSurface();
         final Vec Kd = minHit.getSurface().Kd();
-        return Kd.mult(Math.max(N.dot(L), 0.0));
+        return Kd.mult(Math.max(normalVector.dot(direction), 0.0));
     }
 	
+	// Occluded -> Hidden by another object
 	private boolean isOccluded(Light light, Ray rayToLight) {
-		// TODO Auto-generated method stub
 		for (final Surface surface : this.surfaces) {
 			if (light.isOccludedBy(surface, rayToLight)) {
 				return true;
@@ -267,14 +272,14 @@ public class Scene {
 
 	private Hit intersection(Ray ray) {
 		// TODO Auto-generated method stub
-	     Hit minHit = null;
+	     Hit minimalIntersection = null;
 	        for (final Surface surface : this.surfaces) {
-	            final Hit newHit = surface.intersect(ray);
-	            if (minHit == null || (newHit != null && newHit.compareTo(minHit) < 0)) {
-	                minHit = newHit;
+	            final Hit newHitSurface = surface.intersect(ray);
+	            if (minimalIntersection == null || (newHitSurface != null && newHitSurface.compareTo(minimalIntersection) < 0)) {
+	                minimalIntersection = newHitSurface;
 	            }
 	        }
-	        return minHit;
-	   
+	        return minimalIntersection;
 	}
+
 }

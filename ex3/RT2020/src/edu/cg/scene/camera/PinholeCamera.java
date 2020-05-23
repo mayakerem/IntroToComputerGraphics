@@ -6,7 +6,7 @@ import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
 
 public class PinholeCamera {
-	// TODO Add your fields
+
 	Point cameraPosition;
     Point centerPoint;
     Vec towardsVec;
@@ -30,7 +30,6 @@ public class PinholeCamera {
 	 * 
 	 */
 	public PinholeCamera(Point cameraPosition, Vec towardsVec, Vec upVec, double distanceToPlain) {
-		// TODO: Initialize your fields
 		this.cameraPosition = cameraPosition;
         this.towardsVec = towardsVec.normalize();
         this.rightVec = this.towardsVec.cross(upVec).normalize();
@@ -51,7 +50,6 @@ public class PinholeCamera {
 	 * @param viewAngle - the view Angle.
 	 */
 	public void initResolution(int height, int width, double viewAngle) {
-		// TODO: init your fields
 		this.viewAngle = viewAngle;
         this.resX = width;
         this.resY = height;

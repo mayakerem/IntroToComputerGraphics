@@ -22,7 +22,7 @@ public abstract class Light {
 	/**
 	 * Constructs a ray originated from the given point to the light.
 	 * @param fromPoint - The initial point of the ray
-	 * @return a ray origniated from 'fromPoint' to the light source.
+	 * @return a ray originated from 'fromPoint' to the light source.
 	 */
 	public abstract Ray rayToLight(Point fromPoint);
 	

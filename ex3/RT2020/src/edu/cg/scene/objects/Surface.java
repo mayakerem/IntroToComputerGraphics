@@ -63,14 +63,11 @@ public class Surface implements Intersectable {
 		return material.isTransparent;
 	}
 
-	// TODO: use this method for the refraction implementation (bonus)
-	// Returns the index of refraction of the first medium.
+
 	public double n1(Hit hit) {
 		return hit.isWithinTheSurface() ? material.refractionIndex : 1;
 	}
 
-	// TODO: use this method for the refraction implementation (bonus)
-	// Returns the index of refraction of the first medium.
 	public double n2(Hit hit) {
 		return hit.isWithinTheSurface() ? 1 : material.refractionIndex;
 	}

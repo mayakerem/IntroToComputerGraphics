@@ -147,5 +147,46 @@ public class Scenes {
 		
 		return finalScene;
 	}
-	
+	// Red Sphere
+	public static Scene scene5() {
+		Shape sphereShape1 = new Sphere(new Point(-2.0), 2.0);
+		Material sphereMat1 = new Material().initKa(new Vec(0.5, 0.8, 0.05)).initKd(new Vec(0.0)).initKs(new Vec(0.9))
+				.initShininess(2).initIsTransparent(true).initRefractionIntensity(0.3);
+		Shape sphereShape2 = new Sphere(new Point(1.0), 1.0);
+		Material sphereMat2 = new Material().initKa(new Vec(0.7, 0.0, 0.05)).initKd(new Vec(0.0)).initKs(new Vec(0.9))
+				.initShininess(8).initIsTransparent(true).initRefractionIntensity(0.6);
+		
+		Surface boxSurface1 = new Surface(sphereShape1, sphereMat1);
+		Surface boxSurface2 = new Surface(sphereShape2, sphereMat2);
+		
+		Light dirLight = new DirectionalLight(new Vec(0.0, -1.0, -1.0), new Vec(0.9));
+
+		return new Scene().initAmbient(new Vec(1.0))
+				.initCamera(new Point(4, 4, 1.5), new Vec(-1.0, -1.0, -0.3), new Vec(0, 0, 1), 3)
+				.addLightSource(dirLight).addSurface(boxSurface1).addSurface(boxSurface2).initName("scene5").initAntiAliasingFactor(1)
+				.initRenderRefarctions(true).initRenderReflections(true).initMaxRecursionLevel(7);
+	}
+
+
+
+////Red Sphere
+//	public static Scene scene6() {
+//		Shape sphereShape1 = new Sphere(new Point(-2.0), 2.0);
+//		Material sphereMat1 = new Material().initKa(new Vec(0.5, 0.8, 0.05)).initKd(new Vec(0.0)).initKs(new Vec(0.9))
+//				.initShininess(2).initIsTransparent(true).initRefractionIntensity(0.3);
+//		
+//		Shape plainShape = new Plain(new Vec(0.0,1.0,0.0), new Point(0.0, -1.0, 0.0));
+//
+//		
+//		Surface boxSurface1 = new Surface(sphereShape1, sphereMat1);
+//		
+//		Light dirLight = new DirectionalLight(new Vec(0.0, -1.0, -1.0), new Vec(0.9));
+//
+//		return new Scene().initAmbient(new Vec(1.0))
+//				.initCamera(new Point(4, 4, 1.5), new Vec(-1.0, -1.0, -0.3), new Vec(0, 0, 1), 3)
+//				.addLightSource(dirLight).addSurface(boxSurface1).addSurface(plainShape).initName("scene6").initAntiAliasingFactor(1)
+//				.initRenderRefarctions(true).initRenderReflections(true).initMaxRecursionLevel(7);
+//	}
+//
+//}
 }
