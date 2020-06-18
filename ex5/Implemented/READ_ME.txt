@@ -1,1 +1,0 @@
-Move Ex5.jar to one of the folders {linux-amd64, macosx-universal, windows-amd64}.

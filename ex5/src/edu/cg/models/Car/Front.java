@@ -4,27 +4,36 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.jogamp.opengl.GL2;
+
+import edu.cg.algebra.Point;
+import edu.cg.algebra.Vec;
 import edu.cg.models.BoundingSphere;
 import edu.cg.models.IIntersectable;
 import edu.cg.models.IRenderable;
 
 public class Front implements IRenderable, IIntersectable {
-	// TODO: Add necessary fields (e.g. the bumper).
 	private FrontHood hood = new FrontHood();
 	private PairOfWheels wheels = new PairOfWheels();
+	private FrontBumber frontBumper = new FrontBumber(); // Couldnt overlook this spelling mistake
 
 	@Override
 	public void render(GL2 gl) {
-		// TODO: Render the BUMPER. Look at how we place the front and the wheels of
-		// the car.
+		
 		gl.glPushMatrix();
 		// Render hood - Use Red Material.
 		gl.glTranslated(-Specification.F_LENGTH / 2.0 + Specification.F_HOOD_LENGTH / 2.0, 0.0, 0.0);
 		hood.render(gl);
+		
 		// Render the wheels.
 		gl.glTranslated(Specification.F_HOOD_LENGTH / 2.0 - 1.25 * Specification.TIRE_RADIUS,
 				0.5 * Specification.TIRE_RADIUS, 0.0);
 		wheels.render(gl);
+
+		// Rendering Front BUMPER
+		gl.glTranslated(1.25 * Specification.TIRE_RADIUS + Specification.F_BUMPER_LENGTH / 2.0, 
+				-0.5 * Specification.TIRE_RADIUS, 0.0);
+		frontBumper.render(gl);
+		
 		gl.glPopMatrix();
 	}
 
@@ -34,13 +43,22 @@ public class Front implements IRenderable, IIntersectable {
 
 	@Override
 	public List<BoundingSphere> getBoundingSpheres() {
-		// TODO: Return a list of bounding spheres the list structure is as follow:
-		// s1
-		// where:
-		// s1 - sphere bounding the car front
-		LinkedList<BoundingSphere> res = new LinkedList<BoundingSphere>();
-
-		return res;
+	    // List to return
+	    LinkedList<BoundingSphere> res = new LinkedList<BoundingSphere>();
+	    
+	    Point centerPoint = new Point(0, (Specification.F_HEIGHT / 2.0), 0);
+		double sphereRadius = new Vec(
+				Specification.F_LENGTH / 2, 
+				Specification.F_HEIGHT / 2, 
+				Specification.F_DEPTH / 2).norm();
+		
+		BoundingSphere boundingSphere = new BoundingSphere(sphereRadius, centerPoint);
+		
+		boundingSphere.setSphereColore3d(1.0, 1.0, 0);
+		res.add(boundingSphere);
+		System.out.println("Printed Front Bounding Box" + res);
+	    return res;
+		
 	}
 
 	@Override

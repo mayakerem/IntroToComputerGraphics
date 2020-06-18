@@ -6,6 +6,7 @@ public class Materials {
 
 	private static final float dark_gray[] = { 0.2f, 0.2f, 0.2f };
 	private static final float dark_red[] = { 0.25f, 0.01f, 0.01f };
+
 	private static final float red[] = { 0.5f, 0f, 0f };
 	private static final float black[] = { 0.05f, 0.05f, 0.05f };
 
@@ -35,6 +36,11 @@ public class Materials {
 		SetMetalMaterial(gl, black);
 	}
 
+	public static void SetOrangeMetalMaterial(GL2 gl) {
+		float[] orangeColor = {1.0f, 0.8f, 0.1f } ;
+		SetMetalMaterial(gl,orangeColor);
+	}
+	
 	public static void SetRedMetalMaterial(GL2 gl) {
 		SetMetalMaterial(gl, red);
 	}
@@ -49,7 +55,8 @@ public class Materials {
 	}
 
 	public static void setMaterialTire(GL2 gl) {
-		float col[] = { .05f, .05f, .05f };
+//		float col[] = { .05f, .05f, .05f };
+		float col[] = { 1.0f, 1.0f, 0.0f };
 		gl.glColor3fv(col,0);
 		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 100);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, col, 0);

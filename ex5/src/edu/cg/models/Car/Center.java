@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.jogamp.opengl.GL2;
 
+import edu.cg.algebra.Point;
+import edu.cg.algebra.Vec;
 import edu.cg.models.BoundingSphere;
 import edu.cg.models.IIntersectable;
 import edu.cg.models.IRenderable;
@@ -65,12 +67,23 @@ public class Center implements IRenderable, IIntersectable {
 
 	@Override
 	public List<BoundingSphere> getBoundingSpheres() {
-		// TODO: Return a list of bounding spheres the list structure is as follow:
-		// s1
-		// where:
-		// s1 - sphere bounding the car front
-		LinkedList<BoundingSphere> res = new LinkedList<BoundingSphere>();
+		
+	    // List to return
+	    LinkedList<BoundingSphere> res = new LinkedList<BoundingSphere>();
+	    
+	    Point centerPoint = new Point(0, (Specification.F_HEIGHT / 2.0), 0);
+		double sphereRadius = new Vec(
+				Specification.C_LENGTH / 2, 
+				Specification.C_HIEGHT / 2, 
+				Specification.C_DEPTH / 2).norm();
+		
+		BoundingSphere boundingSphere = new BoundingSphere(sphereRadius, centerPoint);
+		
+		boundingSphere.setSphereColore3d(1.0, 0, 1.0);
+		res.add(boundingSphere);
+		System.out.println("Printed Center Bounding Box" + res);
 
-		return res;
+	    return res;
+		
 	}
 }
