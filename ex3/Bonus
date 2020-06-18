@@ -1,0 +1,7 @@
+We have done 2 bonuses:
+1) Dome (Look at scene4)
+2) Refracting surfaces (Look at scene5)
+
+1) Explication of implementation: When we create a dome, one sphere and one plane are initialized. Then we constructed an intersection. The intersection we are checking for is the one of a sphere with a ray but we need to determine if the intersection happened inside or outside the surface.
+
+2) Explicacion of implementation: Snell's law describes the relationship between angles of indicent and refraction. In particular, Snell's law claims that sin(θ2)/sin(θ1) = v2/v1 = n1/n2. Hence, we computed the dot product between the negative vector and normal vector to the power of 2. We proceeded with computing the θ angle, sin and cos of θ2, and then we constructed the resulting vector as an addition two vectors: -cosθ*normal + sinθ.2*p as shown in class to find the vector.
