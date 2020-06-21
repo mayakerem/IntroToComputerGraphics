@@ -43,7 +43,7 @@ public class Viewer implements GLEventListener {
 		}
 
 		// clear the window before drawing
-		gl.glClearColor(1, 1, 1, 1);
+		gl.glClearColor(0.2f, 0.2f, 0.2f, 1); // Wanted to change the color on the background
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 

@@ -15,18 +15,16 @@ public class BackPipes implements IRenderable {
 		GLUquadric quad = glu.gluNewQuadric();
 		
 		gl.glPushMatrix();
-//		gl.glLineWidth(4);
 		gl.glTranslated(-0.33, 0.07, -0.03); //distance on coordinate system
 		gl.glRotated(90, 0.0, 1.0, 0.0);	
-		Materials.SetOrangeMetalMaterial(gl);
+		Materials.SetSandColorMetalMaterial(gl);
 		glu.gluCylinder(quad, 0.02,0.02,0.2,20,1);
 		gl.glPopMatrix();
 		
 		gl.glPushMatrix();
-//		gl.glLineWidth(4);
 		gl.glTranslated(-0.33, 0.07, 0.03); //distance on coordinate system
 		gl.glRotated(90, 0.0, 1.0, 0.0);	// rotation
-		Materials.SetOrangeMetalMaterial(gl);
+		Materials.SetSandColorMetalMaterial(gl);
 		glu.gluCylinder(quad, 0.02,0.02,0.2,20,1); // Cylinder size
 		gl.glPopMatrix();
 		

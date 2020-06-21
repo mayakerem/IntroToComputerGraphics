@@ -26,9 +26,9 @@ public class Center implements IRenderable, IIntersectable {
 	@Override
 	public void render(GL2 gl) {
 		gl.glPushMatrix();
-		Materials.SetBlackMetalMaterial(gl);
+		Materials.SetBlueMetalMaterial(gl);
 		bodyBase.render(gl);
-		Materials.SetRedMetalMaterial(gl);
+		Materials.SetOceanGreenMetalMaterial(gl);
 		gl.glTranslated(Specification.C_BASE_LENGTH / 2.0 - Specification.C_FRONT_LENGTH / 2.0,
 				Specification.C_BASE_HEIGHT, 0.0);
 		frontBox.render(gl);
@@ -51,7 +51,7 @@ public class Center implements IRenderable, IIntersectable {
 		gl.glRotated(-90, 0.0, 1.0, 0.0);
 		sideBox.render(gl);
 		gl.glPopMatrix();
-		Materials.SetBlackMetalMaterial(gl);
+		Materials.SetBlueMetalMaterial(gl);
 		gl.glPushMatrix();
 		gl.glTranslated(
 				-Specification.C_BASE_LENGTH / 2.0 + Specification.C_FRONT_LENGTH + Specification.C_BACK_LENGTH / 2.0,

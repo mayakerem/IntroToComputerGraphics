@@ -4,11 +4,11 @@ import com.jogamp.opengl.GL2;
 
 public class Materials {
 
-	private static final float dark_gray[] = { 0.2f, 0.2f, 0.2f };
-	private static final float dark_red[] = { 0.25f, 0.01f, 0.01f };
+	private static final float turquoise[] = { 0.12f, 0.75f, 0.5f };
+	private static final float green_blue[] = { 0.12f, 0.5f, 0.75f };
 
-	private static final float red[] = { 0.5f, 0f, 0f };
-	private static final float black[] = { 0.05f, 0.05f, 0.05f };
+	private static final float ocean_green[] = { 0.0f, 0.75f, 0.75f }; 
+	private static final float blue[] = { 0.0f, 0.47f, 0.75f };
 
 	public static void SetMetalMaterial(GL2 gl, float[] color) {
 		float specular[] = { 0.8f, 0.8f, 0.8f };
@@ -26,51 +26,50 @@ public class Materials {
 		}
 		
 		gl.glColor3fv(color, 0);
-		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 10);
+		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 20);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffColor, 0);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emissionColor, 0);
 	}
 
-	public static void SetBlackMetalMaterial(GL2 gl) {
-		SetMetalMaterial(gl, black);
+	public static void SetBlueMetalMaterial(GL2 gl) {
+		SetMetalMaterial(gl, blue);
 	}
 
-	public static void SetOrangeMetalMaterial(GL2 gl) {
-		float[] orangeColor = {1.0f, 0.8f, 0.1f } ;
-		SetMetalMaterial(gl,orangeColor);
+	public static void SetSandColorMetalMaterial(GL2 gl) {
+		float[] sandColor = {0.87f, 0.82f, 0.75f} ; // sand color
+		SetMetalMaterial(gl,sandColor);
 	}
 	
-	public static void SetRedMetalMaterial(GL2 gl) {
-		SetMetalMaterial(gl, red);
+	public static void SetOceanGreenMetalMaterial(GL2 gl) {
+		SetMetalMaterial(gl, ocean_green);
 	}
 
-	public static void SetDarkRedMetalMaterial(GL2 gl) {
-		SetMetalMaterial(gl, dark_red);
+	public static void SetGreenBlueMetalMaterial(GL2 gl) {
+		SetMetalMaterial(gl, green_blue);
 	}
 	
-	public static void SetDarkGreyMetalMaterial(GL2 gl) {
+	public static void SetTurquoiseMetalMaterial(GL2 gl) {
 		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 25);
-		SetMetalMaterial(gl, dark_gray);
+		SetMetalMaterial(gl, turquoise);
 	}
 
 	public static void setMaterialTire(GL2 gl) {
-//		float col[] = { .05f, .05f, .05f };
-		float col[] = { 1.0f, 1.0f, 0.0f };
+		float col[] = { 1.0f, 1.0f, 1.0f }; // White Color
 		gl.glColor3fv(col,0);
-		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 100);
+		gl.glMaterialf(GL2.GL_FRONT, 0xFFFF, 100);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, col, 0);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, col, 0);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, col, 0);
 	}
 
 	public static void setMaterialRims(GL2 gl) {
-		float col[] = { .8f, .8f, .8f };
-		gl.glColor3fv(dark_gray,0);
+		float col[] = { 1.0f, 1.0f, 1.0f }; // White Color
+		gl.glColor3fv(turquoise,0);
 		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 20);
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, dark_gray, 0);
+		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, turquoise, 0);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, col, 0);
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, dark_gray, 0);
+		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, turquoise, 0);
 	}
 
 }

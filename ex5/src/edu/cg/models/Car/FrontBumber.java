@@ -32,7 +32,7 @@ public class FrontBumber implements IRenderable {
 		gl.glTranslated(0,0, Specification.F_BUMPER_WINGS_DEPTH / 2 + Specification.F_BUMPER_DEPTH / 2);
 		gl.glPushMatrix();
 
-		Materials.SetBlackMetalMaterial(gl);
+		Materials.SetBlueMetalMaterial(gl);
 
 		this.bumperWingsBox1  = new SkewedBox(
 				Specification.F_BUMPER_LENGTH,
@@ -50,7 +50,7 @@ public class FrontBumber implements IRenderable {
 		gl.glTranslated(0,0,-2*(Specification.F_BUMPER_WINGS_DEPTH / 2 + Specification.F_BUMPER_DEPTH / 2));
 		gl.glPushMatrix();// remember the second wing position
 		
-		Materials.SetBlackMetalMaterial(gl); // return to wing's color
+		Materials.SetBlueMetalMaterial(gl); // return to wing's color
 		this.bumperWingsBox1.render(gl);
 
 		//Draw sphere
@@ -63,7 +63,7 @@ public class FrontBumber implements IRenderable {
 	
 
 	private void renderSphere(GL2 gl, GLU glu, GLUquadric quad) {
-		gl.glColor3d(1, 0.7, 0.8);
+		gl.glColor3d(0.87, 0.82, 0.75);// Sand Color
 		double sphereRadius = Specification.F_BUMPER_WINGS_DEPTH / 2.5;
 		gl.glTranslated(0.0, Specification.F_BUMPER_WINGS_DEPTH / 2.0, 0.0);
 		glu.gluSphere(quad, sphereRadius, 10, 10);

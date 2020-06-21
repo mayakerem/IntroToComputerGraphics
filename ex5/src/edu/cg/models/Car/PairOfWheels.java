@@ -15,7 +15,7 @@ public class PairOfWheels implements IRenderable {
 		gl.glPushMatrix();
 		gl.glTranslated(0.0, 0.0, -Specification.PAIR_OF_WHEELS_ROD_DEPTH/2.0);
 		GLU glu = new GLU();
-		Materials.SetDarkGreyMetalMaterial(gl);
+		Materials.SetTurquoiseMetalMaterial(gl);
 		GLUquadric quad = glu.gluNewQuadric();
 		glu.gluCylinder(quad, Specification.PAIR_OF_WHEELS_ROD_RADIUS, Specification.PAIR_OF_WHEELS_ROD_RADIUS, Specification.PAIR_OF_WHEELS_ROD_DEPTH, 20, 1);
 		gl.glTranslated(0.0, 0.0, Specification.TIRE_RADIUS/2.0 + Specification.PAIR_OF_WHEELS_ROD_DEPTH);
