@@ -81,7 +81,7 @@ public class Center implements IRenderable, IIntersectable {
 		
 		boundingSphere.setSphereColore3d(1.0, 0, 1.0);
 		res.add(boundingSphere);
-		System.out.println("Printed Center Bounding Box" + res);
+//		System.out.println("Printed Center Bounding Box" + res);
 
 	    return res;
 		

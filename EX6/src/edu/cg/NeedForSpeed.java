@@ -207,13 +207,25 @@ public class NeedForSpeed implements GLEventListener {
 		//             This will simulate the car movement.
 		// * Remember: the car was modeled locally, you may need to rotate/scale and translate the car appropriately.
 		// * Recommendation: it is recommended to define fields (such as car initial position) that can be used during rendering.
-		final double carRotation = this.gameState.getCarRotation();
-        gl.glPushMatrix();
-        gl.glTranslated(this.carInitialPosition[0] + this.carCameraTranslation.x, this.carInitialPosition[1] + this.carCameraTranslation.y, this.carInitialPosition[2] + this.carCameraTranslation.z);
-        gl.glRotated(90.0 - carRotation, 0.0, 1.0, 0.0);
-        gl.glScaled(this.carScale, this.carScale, this.carScale);
-        this.car.render(gl);
-        gl.glPopMatrix();
+//		final double carRotation = this.gameState.getCarRotation();
+//        gl.glPushMatrix();
+//        gl.glTranslated(
+//        		this.carInitialPosition[0] + this.carCameraTranslation.x, 
+//        		this.carInitialPosition[1] + this.carCameraTranslation.y, 
+//        		this.carInitialPosition[2] + this.carCameraTranslation.z);
+//        gl.glRotated(90.0 - carRotation, 0.0, 1.0, 0.0);
+//        gl.glScaled(this.carScale, this.carScale, this.carScale);
+//        this.car.render(gl);
+//        gl.glPopMatrix();
+//	}
+		double carRotation = this.gameState.getCarRotation();
+		gl.glPushMatrix();
+		gl.glTranslated(this.carCameraTranslation.x, 0.1 + this.carCameraTranslation.y, -6 + this.carCameraTranslation.z);
+		gl.glRotated(-carRotation, 0, 1, 0);
+		gl.glRotated(90, 0, 0.1, 0);
+		gl.glScaled(4, 4, 4);
+		this.car.render(gl);
+		gl.glPopMatrix();
 	}
 
 	public GameState getGameState() {

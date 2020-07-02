@@ -63,7 +63,7 @@ public class F1Car implements IRenderable, IIntersectable {
 
 		BoundingSphere boundingSphere = new BoundingSphere(s1Radius, s1Center);
 		boundingSphere.setSphereColore3d(1.0, 0.0, 0.0);
-		System.out.println("Printed Entire Car bounding box" + res);
+//		System.out.println("Printed Entire Car bounding box" + res);
 		res.add(boundingSphere);
 
 		// Constructing s2
@@ -75,7 +75,7 @@ public class F1Car implements IRenderable, IIntersectable {
 			frontBoundingSphere.translateCenter(frontTranslation, 0.0, 0.0);
 			res.add(frontBoundingSphere);
 		}
-		System.out.println("Printed Front Car bounding box");
+//		System.out.println("Printed Front Car bounding box");
 
 		// Constructing s3
 		List<BoundingSphere> centerBS = carCenter.getBoundingSpheres();

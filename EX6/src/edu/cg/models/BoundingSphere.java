@@ -29,12 +29,12 @@ public class BoundingSphere implements IRenderable {
 	 * @return true if the spheres intersects, and false otherwise
 	 */
 	public boolean checkIntersection(BoundingSphere s) {
-		//Checking the distance between current sphere and given sphere
+		// Checking the distance between current sphere and given sphere
 		float sphereDistances = this.center.dist(s.center);
 		// Claiming a threshold of minimum distance between the spheres such that
 		// we can't have an intersection
 		double radiusThreshold = this.radius + s.radius;
-		return sphereDistances <= radiusThreshold ;
+		return sphereDistances <= radiusThreshold;
 	}
 
 	public void translateCenter(double dx, double dy, double dz) {
@@ -44,29 +44,25 @@ public class BoundingSphere implements IRenderable {
 	@Override
 	public void render(GL2 gl) {
 		double red = this.color[0];
-		double green =this.color[1];
-		double blue =this.color[2];
-		
+		double green = this.color[1];
+		double blue = this.color[2];
+
 		// Specifying Colors
 		gl.glColor3d(red, green, blue);
-	    // Adding Matrix to the stack
+		// Adding Matrix to the stack
 		gl.glPushMatrix();
-	    
-	    final GLU glu = new GLU();
-	    final GLUquadric quad = glu.gluNewQuadric();
-	   
-	    gl.glTranslated(
-	    		(double) this.center.x, 
-	    		(double) this.center.y, 
-	    		(double) this.center.z
-	    		);
-	    
-	    // 10 slices, 10 stacks
-	    glu.gluSphere(quad, this.radius, 10, 10);
-	    glu.gluDeleteQuadric(quad);
-	    // Pop Matrix from stack
-	    gl.glPopMatrix();
-	   
+
+		final GLU glu = new GLU();
+		final GLUquadric quad = glu.gluNewQuadric();
+
+		gl.glTranslated((double) this.center.x, (double) this.center.y, (double) this.center.z);
+
+		// 10 slices, 10 stacks
+		glu.gluSphere(quad, this.radius, 10, 10);
+		glu.gluDeleteQuadric(quad);
+		// Pop Matrix from stack
+		gl.glPopMatrix();
+
 	}
 
 	@Override
@@ -92,20 +88,20 @@ public class BoundingSphere implements IRenderable {
 	@Override
 	public void destroy(GL2 gl) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void scaleRadius(double carScale) {
-        this.radius *= carScale;
-		
+		this.radius *= carScale;
+
 	}
 
 	public void rotateCenterYAxis(double d) {
-        final double cosTheta = Math.cos(Math.toRadians(d));
-        final double sinTheta = Math.sin(Math.toRadians(d));
-        final double newX = cosTheta * this.center.x + sinTheta * this.center.z;
-        final double newZ = -sinTheta * this.center.x + cosTheta * this.center.z;
-        this.center = new Point(newX, this.center.y, newZ);		
+		final double cosTheta = Math.cos(Math.toRadians(d));
+		final double sinTheta = Math.sin(Math.toRadians(d));
+		final double newX = cosTheta * this.center.x + sinTheta * this.center.z;
+		final double newZ = -sinTheta * this.center.x + cosTheta * this.center.z;
+		this.center = new Point(newX, this.center.y, newZ);
 	}
 
 }

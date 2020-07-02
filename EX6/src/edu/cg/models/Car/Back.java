@@ -81,7 +81,7 @@ public class Back implements IRenderable, IIntersectable {
 		
 		boundingSphere.setSphereColore3d(0, 1.0, 1.0);
 		res.add(boundingSphere);
-		System.out.println("Printed Back Bounding Box" + res);
+//		System.out.println("Printed Back Bounding Box" + res);
 	    return res;
 		}
 

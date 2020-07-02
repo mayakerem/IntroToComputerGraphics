@@ -56,7 +56,7 @@ public class Front implements IRenderable, IIntersectable {
 		
 		boundingSphere.setSphereColore3d(1.0, 1.0, 0);
 		res.add(boundingSphere);
-		System.out.println("Printed Front Bounding Box" + res);
+//		System.out.println("Printed Front Bounding Box" + res);
 	    return res;
 		
 	}
