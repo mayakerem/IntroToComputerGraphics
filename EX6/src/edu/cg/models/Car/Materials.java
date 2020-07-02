@@ -29,7 +29,7 @@ public class Materials {
 		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 20);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffColor, 0);
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emissionColor, 0);
+//		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emissionColor, 0);
 	}
 
 	public static void SetBlueMetalMaterial(GL2 gl) {

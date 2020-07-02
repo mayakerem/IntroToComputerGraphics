@@ -95,4 +95,17 @@ public class BoundingSphere implements IRenderable {
 		
 	}
 
+	public void scaleRadius(double carScale) {
+        this.radius *= carScale;
+		
+	}
+
+	public void rotateCenterYAxis(double d) {
+        final double cosTheta = Math.cos(Math.toRadians(d));
+        final double sinTheta = Math.sin(Math.toRadians(d));
+        final double newX = cosTheta * this.center.x + sinTheta * this.center.z;
+        final double newZ = -sinTheta * this.center.x + cosTheta * this.center.z;
+        this.center = new Point(newX, this.center.y, newZ);		
+	}
+
 }
